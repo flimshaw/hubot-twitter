@@ -4,6 +4,7 @@
 HTTPS        = require 'https'
 EventEmitter = require('events').EventEmitter
 oauth        = require('oauth')
+colors       = require('colors')
 
 class Twitter extends Adapter
 
@@ -38,10 +39,10 @@ class Twitter extends Adapter
     bot.tweet self.robot.name, (data, err) ->
       self.x += 1
       reg = new RegExp('@'+self.robot.name,'i')
-      console.log "received #{data.text} from #{data.user.screen_name}"
+      console.log "received #{data.text} from #{data.user.screen_name}".magenta
 
       if err
-        console.log "received error: #{err}"
+        console.log "received error: #{err}".red
 
       # ignore retweets
       if data.text.substr(0, 2) != "RT"
@@ -49,7 +50,7 @@ class Twitter extends Adapter
         tmsg = new TextMessage({ user: data.user.screen_name, status_id: data.id_str }, msg)
         self.receive tmsg
       else
-        console.log "RETWEET"
+        console.log "RETWEET".grey
 
     @bot = bot
 
@@ -82,10 +83,10 @@ class TwitterStreaming extends EventEmitter
     @post "/1.1/statuses/filter.json?track=#{track}", '', callback
 
   send : (user, tweetText, in_reply_to_status_id) ->
-    console.log "send twitt to #{user} with text #{tweetText}"
+    console.log "Sent tweet to #{user} with text #{tweetText}".bgGreen
     @consumer.post "https://api.twitter.com/1.1/statuses/update.json", @token, @tokensecret, { status: "@#{user} #{tweetText}", in_reply_to_status_id: in_reply_to_status_id },'UTF-8',  (error, data, response) ->
       if error
-        console.log "twitter send error: #{error} #{data}"
+        console.log "twitter send error: #{error} #{data}".bgRed
       console.log "Status #{response.statusCode}"
 
   # Convenience HTTP Methods for posting on behalf of the token"d user
