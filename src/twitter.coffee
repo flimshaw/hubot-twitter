@@ -40,11 +40,16 @@ class Twitter extends Adapter
       reg = new RegExp('@'+self.robot.name,'i')
       console.log "received #{data.text} from #{data.user.screen_name}"
 
-      msg = data.text.replace reg, self.robot.name
-      tmsg = new TextMessage({ user: data.user.screen_name, status_id: data.id_str }, msg)
-      self.receive tmsg
       if err
         console.log "received error: #{err}"
+
+      # ignore retweets
+      if data.text.substr(0, 2) != "RT"
+        msg = data.text.replace reg, self.robot.name
+        tmsg = new TextMessage({ user: data.user.screen_name, status_id: data.id_str }, msg)
+        self.receive tmsg
+      else
+        console.log "RETWEET"
 
     @bot = bot
 
